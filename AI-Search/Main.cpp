@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <stack>
+#include <queue>
 
 using namespace std;
 using c_node_t = Node<char>;
@@ -54,6 +55,53 @@ vector<c_node_t*> DFS(c_node_t* root, char target)
 	return path;
 }
 
+vector<c_node_t*> BFS(c_node_t* root, char target)
+{
+	if (root == nullptr) return vector<c_node_t*>();
+
+	queue<c_node_t*> node_queue;
+	root->visited = true;
+
+	node_queue.push(root);
+
+	while (!node_queue.empty())
+	{
+		c_node_t* current = node_queue.front();
+
+		if (current->data == target)
+		{
+			cout << "found: " << current->data << endl;
+			break;
+		}
+		else
+		{
+			cout << "visit: " << current->data << endl;
+		}
+
+		for (auto child : current->children)
+		{
+			if (!child->visited)
+			{
+				child->visited = true;
+				child->parent = current;
+				node_queue.push(child);
+			}
+		}
+
+		node_queue.pop();
+	}
+
+	vector<c_node_t*> path;
+	c_node_t* node = (!node_queue.empty()) ? node_queue.front() : nullptr;
+	while (node)
+	{
+		path.insert(path.begin(), node);
+		node = node->parent;
+	}
+
+	return path;
+}
+
 int main()
 {
 	c_node_t* nodeA = new c_node_t('A');
@@ -72,7 +120,11 @@ int main()
 	nodeC->children.push_back(nodeE);
 	nodeC->children.push_back(nodeF);
 
-	auto path = DFS(nodeA, 'F');
+	/*cout << "DFS\n";
+	auto path = DFS(nodeA, 'F');*/
+
+	cout << "BFS\n";
+	auto path = BFS(nodeA, 'F');
 
 	cout << "Path: ";
 	for (auto node : path)
@@ -80,4 +132,5 @@ int main()
 		cout << node->data << "->";
 	}
 	cout << endl;
+
 }
